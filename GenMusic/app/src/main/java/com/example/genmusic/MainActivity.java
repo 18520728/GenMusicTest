@@ -3,30 +3,29 @@ package com.example.genmusic;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import android.opengl.Visibility;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
-
+import android.widget.EditText;
+import android.widget.ImageButton;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     //-----------------------A. Khai báo biến -------------------------
     private BottomNavigationView bottomNavigationView;
-
     private ViewPager viewPager;
 
+    private ImageButton btnUser, btnSetting;
+    private EditText edtSearch;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,27 +36,37 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.BottomNav);
         viewPager = findViewById(R.id.ViewPager);
 
-
+        btnUser = findViewById(R.id.btnUser);
+        btnSetting = findViewById(R.id.btnSetting);
+        edtSearch = findViewById(R.id.edtSearch);
 
         //-----------------------C. Code xử lý -------------------------
 
 
         //NAVIGATION BAR------------------------
-
         //Xử lý ViewPager
         setOnViewPager();
 
         //Xử lý BottomNavigationBar
         setOnNavBar();
 
+        //Xử lý quay về đúng TheLoaiFragment
+        backToExactlyFragment();
 
 
+
+        //Đi đến Search Activity
+        goToSearchActivity();
+        //Đi đến User Setting Activity
+        goToUserActivity();
+        //Đi đến Setting Activity
+        goToSettingActivity();
     }
 
 
-
-
     // CÁC HÀM XỬ LÝ -----------------------------------------------------
+
+
 
     private void setOnNavBar() {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -86,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
     private void setOnViewPager() {
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         viewPager.setAdapter(viewPagerAdapter);
-
         //Xử lí sự kiện vuốt ngang màn hình
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -121,5 +129,53 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+
+    private void backToExactlyFragment() {
+        intent = getIntent();
+        int index = intent.getIntExtra("current_fragment", 0);
+        viewPager.setCurrentItem(index);
+
+    }
+
+    private void goToSearchActivity() {
+        edtSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(MainActivity.this, Search.class);
+
+                intent.putExtra("current_fragment",viewPager.getCurrentItem());
+                startActivity(intent);
+                //finish();
+
+            }
+        });
+
+    }
+
+    private void goToUserActivity() {
+        btnUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(MainActivity.this, UserSetting.class);
+                intent.putExtra("current_fragment",viewPager.getCurrentItem());
+                startActivity(intent);
+                //finish();
+            }
+        });
+
+    }
+    private void goToSettingActivity() {
+        btnSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(MainActivity.this, Setting.class);
+                intent.putExtra("current_fragment",viewPager.getCurrentItem());
+                startActivity(intent);
+                //finish();
+            }
+        });
+
+    }
 
 }
